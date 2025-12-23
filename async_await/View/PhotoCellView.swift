@@ -8,41 +8,18 @@ import SwiftUI
 
 struct PhotoCellView: View {
     
-    @StateObject private var viewModel = ImageViewModel()
+    let imageData: Data
     
+    // передаем бинарную Data в UIImage и присваиваем в let image, а затем создаем вьюшку, куда передаем UIImage, верно?
+    // можно ли сразу делать вью UIImage(data: imageData)? или не правильно т.к. возможнен краш, потому сначала распаковка опционала?
     var body: some View {
-        ZStack {
-            switch viewModel.state {
-            case .loading:
-                Rectangle()
-                    .fill(.gray.opacity(0.8))
-                    .overlay(ProgressView())
-                    .aspectRatio(1, contentMode: .fit)
-                    .cornerRadius(10)
-                
-            case .failure:
-                Rectangle()
-                    .fill(.red.opacity(0.6))
-                    .overlay(
-                        VStack {
-                            Image(systemName: "xmark.circle")
-                                .font(.largeTitle)
-                            Text("failure")
-                        }
-                    )
-                    .aspectRatio(1, contentMode: .fit)
-                    .cornerRadius(10)
-                
-            case .success(let image):
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .cornerRadius(10)
-                
-            }
-        }
-        .task {
-            await viewModel.load()
+        if let image = UIImage(data: imageData) {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
+                .cornerRadius(10)
+        } else {
+            Text("Error loading image")
         }
     }
 }
