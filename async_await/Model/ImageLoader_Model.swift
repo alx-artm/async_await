@@ -11,8 +11,7 @@ import SwiftUI
 final class ImageLoader_Model {
     
     func loadImage() async throws -> UIImage {
-        // ПОЧЕМУ ТУТ ВОСКЛ ЗНАК !
-        let url = URL(string: "https://picsum.photos/400")!
+        let url = URL(string: "https://picsum.photos/600")!
         let (data, _) = try await URLSession.shared.data(from: url)
         
         guard let image = UIImage(data: data) else {

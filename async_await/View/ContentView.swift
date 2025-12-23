@@ -13,7 +13,6 @@ struct ContentView: View {
     
     let columns: [GridItem] = [
         GridItem(.adaptive(minimum: 150, maximum: 600), spacing: nil, alignment: nil),
-        //GridItem(.adaptive(minimum: 200, maximum: 600), spacing: nil, alignment: nil)
     ]
     
     var body: some View {
