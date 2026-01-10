@@ -15,7 +15,7 @@ struct PhotoCellView: View {
             switch viewModel.state {
             case .loading:
                 Rectangle()
-                    .fill(.gray.opacity(0.8))
+                    .fill(.gray.opacity(0.6))
                     .overlay(ProgressView())
                     .aspectRatio(1, contentMode: .fit)
                     .cornerRadius(10)
