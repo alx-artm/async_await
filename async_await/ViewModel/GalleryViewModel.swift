@@ -19,7 +19,7 @@ protocol ImageCacheProtocol {
 // View Model
 @MainActor
 final class GalleryViewModel: ObservableObject {
-        
+    
     @Published var items: [CachedPhoto] = []
     
     private let loader: ImageLoader_Model
@@ -46,15 +46,13 @@ final class GalleryViewModel: ObservableObject {
     func loadMore() async {
         guard items.count < maxItems else { return }
         
-        for _ in 0..<4 {
-            do {
-                let image = try await loader.loadImage()
-                let data = image.jpegData(compressionQuality: 0.9)!
-                let cached = cache.save(imageData: data)
-                items.append(cached)
-            } catch {
-                print(error)
-            }
+        do {
+            let image = try await loader.loadImage()
+            let data = image.jpegData(compressionQuality: 0.9)!
+            let cached = cache.save(imageData: data)
+            items.append(cached)
+        } catch {
+            print(error)
         }
     }
     
