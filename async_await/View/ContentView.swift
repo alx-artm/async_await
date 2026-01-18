@@ -13,7 +13,7 @@ struct ContentView: View {
     
     @StateObject private var viewModel = GalleryViewModel(
         loader: ImageLoader_Model(),
-        cache: CoreDataImageCache(),
+        cache: CoreDataImageCache(context: CoreDataStack.shared.context),
         maxItems: 100
     )
     
@@ -28,9 +28,8 @@ struct ContentView: View {
         
         ScrollView {
             LazyVGrid(columns: columns, alignment: .center, spacing: nil) {
-                ForEach(viewModel.items, id: \.self) {item in
-                    // force unwrap - как пофиксить? в дочернем PhotoCellView там стоит else или глубже искать?
-                    PhotoCellView(imageData: item.imageData!)
+                ForEach(viewModel.items) {item in
+                    AsyncImgView(imageURL: item.imageURL)
                         .onAppear {
                             Task {
                                 await viewModel.loadMoreIfNeeded(currentItem: item)

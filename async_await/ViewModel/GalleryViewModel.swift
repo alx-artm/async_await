@@ -10,17 +10,11 @@
 import Combine
 import SwiftUI
 
-
-protocol ImageCacheProtocol {
-    func loadImages() -> [CachedPhoto]
-    func save(imageData: Data) -> CachedPhoto
-}
-
 // View Model
 @MainActor
 final class GalleryViewModel: ObservableObject {
     
-    @Published var items: [CachedPhoto] = []
+    @Published var items: [Photo] = []
     
     private let loader: ImageLoader_Model
     private let cache: ImageCacheProtocol
@@ -48,7 +42,10 @@ final class GalleryViewModel: ObservableObject {
         
         do {
             let image = try await loader.loadImage()
-            let data = image.jpegData(compressionQuality: 0.9)!
+            // Метод UIImage.jpegData(compressionQuality:) имеет сигнатуру: func jpegData(compressionQuality: CGFloat) -> Data?
+            // то есть возвращает оционал Data?, то есть не каждая картинка может быть сконвертирована в JPEG, потому разворачиваю через guard let
+            guard let data = image.jpegData(compressionQuality: 0.9) else { return }
+            // вот здесь метод save сохраняет CachedPhoto + возвращает struct Photo и это закидывается в массив items
             let cached = cache.save(imageData: data)
             items.append(cached)
         } catch {
@@ -56,7 +53,7 @@ final class GalleryViewModel: ObservableObject {
         }
     }
     
-    func loadMoreIfNeeded(currentItem item: CachedPhoto) async {
+    func loadMoreIfNeeded(currentItem item: Photo) async {
         guard let last = items.last else { return }
         
         if item.id == last.id {

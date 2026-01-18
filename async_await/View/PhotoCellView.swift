@@ -19,7 +19,8 @@ struct PhotoCellView: View {
                 .scaledToFit()
                 .cornerRadius(10)
         } else {
-            Text("Error loading image")
+            Color.gray
+                .opacity(0.5)
         }
     }
 }

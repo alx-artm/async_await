@@ -16,8 +16,8 @@ final class CoreDataStack {
     
     let container: NSPersistentContainer
     
-    // почему так происходит инит?
-    private init(inMemory: Bool = false) {
+// MARK: WARNING: ЧТОБЫ НА РЕАЛЬНОМ ДЕВАЙСЕ РАБОТАЛО - НУЖНО УСТАНОВИТЬ FALSE, иначе строки-адреса будут храниться в оперативке и не будет persistence (при закрытии приложения ссылки на файлы в БД не сохранятся, хотя файлы будут на диске в файловой системе приложения, в папке приложения)! Тут стоит true чтобы работало #preview, так как без этого превью крашится
+    private init(inMemory: Bool = true) {
         //имя должно совпадать с названием файла .xcdatamodeld
         container = NSPersistentContainer(name: "ImageModel")
         
