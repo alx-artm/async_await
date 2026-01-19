@@ -6,6 +6,7 @@
 //
 import SwiftUI
 
+// СЕЙЧАС В ТЕКУЩЕМ КОДЕ НЕ ИСПОЛЬЗУЕТСЯ ЭТА ВЬЮШКА
 struct PhotoCellView: View {
     
     let imageData: Data

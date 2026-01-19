@@ -21,19 +21,11 @@ final class CoreDataStack {
         //имя должно совпадать с названием файла .xcdatamodeld
         container = NSPersistentContainer(name: "ImageModel")
         
-        // что это? Gemini
-        if inMemory {
-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
-        }
-        
         container.loadPersistentStores { (description, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         }
-        
-        // нужно пояснение для этого (это что?): автоматически объединять изменения, если сохраняем из разных потоков
-        container.viewContext.automaticallyMergesChangesFromParent = true
     }
     
     // вспомогательная функция для сохранения - почему вспомогательная? когда именно ее нужно вызывать?
@@ -43,7 +35,7 @@ final class CoreDataStack {
             do {
                 try context.save()
             } catch {
-                print("Something went wrong: \(error)")
+                print("Something went wrong: \(error.localizedDescription)")
             }
         }
     }

@@ -29,8 +29,17 @@ final class CoreDataImageCache: ImageCacheProtocol {
             // Key-Value Coding (KVC), можно еще так: #keyPath(CachedPhoto.createdAt)
             NSSortDescriptor(key: #keyPath(CachedPhoto.createdAt), ascending: true)
         ]
-        let result = (try? context.fetch(request)) ?? []
-        return result.map { $0.toDomain() }
+        
+        do {
+            // Выполняем запрос в БД
+            let result = try context.fetch(request)
+            return result.map { $0.toDomain() }
+        } catch {
+            // Логируем ошибку
+            print("Core Data fetch error: \(error.localizedDescription)")
+            // Возвращаем пустой массив чтобы приложение не упало
+            return []
+        }
     }
     
     func save(imageData: Data) -> Photo {
@@ -39,7 +48,11 @@ final class CoreDataImageCache: ImageCacheProtocol {
         let fileURL = documentsPath.appendingPathComponent(fileName)
         
         // 1. Физическое сохранение (пишем байты на диск)
-        try? imageData.write(to: fileURL)
+        do {
+            try imageData.write(to: fileURL)
+        } catch {
+            print("Can't write to disk: \(error.localizedDescription)")
+        }
         
         // 2. Запись в БД (пишем имя файла в Core Data)
         let image = CachedPhoto(context: context)
@@ -47,7 +60,12 @@ final class CoreDataImageCache: ImageCacheProtocol {
         image.createdAt = Date()
         image.imageFileName = fileName // String атрибут
         
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            print("Can't save to Core Data: \(error.localizedDescription)")
+        }
+        
         return image.toDomain()
     }
     
@@ -56,15 +74,27 @@ final class CoreDataImageCache: ImageCacheProtocol {
         let request: NSFetchRequest<CachedPhoto> = CachedPhoto.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", photo.id as CVarArg)
         
-        if let result = try? context.fetch(request), let objectToDelete = result.first {
-            // Удаляем файл с диска
-            if let url = photo.imageURL {
-                try? FileManager.default.removeItem(at: url)
+        do {
+            let result = try context.fetch(request)
+            if let objectToDelete = result.first {
+                
+                // Удаляем файл с диска
+                do {
+                    try FileManager.default.removeItem(at: photo.imageURL)
+                } catch {
+                    print("can't delete file from disk: \(error.localizedDescription)")
+                }
+                
+                // Удаляем из базы SQLite
+                context.delete(objectToDelete)
+                do {
+                    try context.save()
+                } catch {
+                    print("can't delete from CoreData: \(error.localizedDescription)")
+                }
             }
-            
-            // Удаляем из базы SQLite
-            context.delete(objectToDelete)
-            try? context.save()
+        } catch {
+            print(": \(error)")
         }
     }
 }
