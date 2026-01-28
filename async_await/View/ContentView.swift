@@ -6,10 +6,15 @@
 //
 
 
-// View
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject private var viewModel = GalleryViewModel(
+        loader: ImageLoader_Model(),
+        cache: CoreDataImageCache(context: CoreDataStack.shared.context),
+        maxItems: 100
+    )
     
     let columns: [GridItem] = [
         GridItem(.adaptive(minimum: 150, maximum: 600), spacing: nil, alignment: nil),
@@ -17,13 +22,24 @@ struct ContentView: View {
     
     var body: some View {
         
+        Text("Items count: \(viewModel.items.count.description)")
+            .padding()
+        
         ScrollView {
             LazyVGrid(columns: columns, alignment: .center, spacing: nil) {
-                ForEach(0..<20) {_ in
-                    PhotoCellView()
+                ForEach(viewModel.items) {item in
+                    PhotoCellView(photo: item)
+                        .onAppear {
+                            Task {
+                                await viewModel.loadMoreIfNeeded(currentItem: item)
+                            }
+                        }
                 }
             }
             .padding(8)
+        }
+        .onAppear {
+            viewModel.loadInitial()
         }
     }
 }
