@@ -1,28 +1,31 @@
 //
-//  PhotoCell.swift
+//  AsyncImgView.swift
 //  async_await
 //
 //  Created by Alex on 22.12.25.
 //
+
 import SwiftUI
 
-// СЕЙЧАС В ТЕКУЩЕМ КОДЕ НЕ ИСПОЛЬЗУЕТСЯ ЭТА ВЬЮШКА
 struct PhotoCellView: View {
+    let photo: Photo
     
-    let imageData: Data
-    
-    // передаем бинарную Data в UIImage и присваиваем в let image, а затем создаем вьюшку, куда передаем UIImage, верно?
-    // можно ли сразу делать вью UIImage(data: imageData)? или не правильно т.к. возможнен краш, потому сначала распаковка опционала?
     var body: some View {
-        if let image = UIImage(data: imageData) {
+        
+        if let image = UIImage(contentsOfFile: photo.imageURL.path) {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFit()
                 .cornerRadius(10)
         } else {
-            Color.gray
-                .opacity(0.5)
+            Color.gray.opacity(0.5)
+                .frame(maxWidth: .infinity, minHeight: 150, maxHeight: .infinity)
+                .overlay {
+                    Text("Smth wrong with file...")
+                        .fontWeight(.bold)
+                        .padding()
+                }
+                .cornerRadius(10)
         }
     }
 }
-

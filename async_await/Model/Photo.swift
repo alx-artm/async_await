@@ -7,7 +7,6 @@
 
 import Foundation
 
-// Domain model
 struct Photo: Identifiable, Equatable {
     let id: UUID
     let imageURL: URL

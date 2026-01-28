@@ -6,7 +6,6 @@
 //
 
 
-// View
 import SwiftUI
 
 struct ContentView: View {
@@ -29,7 +28,7 @@ struct ContentView: View {
         ScrollView {
             LazyVGrid(columns: columns, alignment: .center, spacing: nil) {
                 ForEach(viewModel.items) {item in
-                    AsyncImgView(imageURL: item.imageURL)
+                    PhotoCellView(photo: item)
                         .onAppear {
                             Task {
                                 await viewModel.loadMoreIfNeeded(currentItem: item)
