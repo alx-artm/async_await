@@ -60,3 +60,5 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+.DS_Store
+async_await.xcodeproj/xcshareddata/xcschemes/async_await.xcscheme

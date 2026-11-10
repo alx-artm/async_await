@@ -5,7 +5,6 @@
 //  Created by Alex on 22.12.25.
 //
 
-// Model
 import SwiftUI
 
 final class ImageLoader_Model {
